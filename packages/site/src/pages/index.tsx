@@ -1,5 +1,6 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import styled from 'styled-components';
+import { ethers } from 'ethers';
 import { MetamaskActions, MetaMaskContext } from '../hooks';
 import {
   connectSnap,
@@ -35,6 +36,25 @@ const Heading = styled.h1`
   margin-top: 0;
   margin-bottom: 2.4rem;
   text-align: center;
+`;
+
+const Title = styled.h2`
+  font-size: ${({ theme }) => theme.fontSizes.large};
+  margin: 0;
+  ${({ theme }) => theme.mediaQueries.small} {
+    font-size: ${({ theme }) => theme.fontSizes.text};
+  }
+`;
+
+const Button = styled.button`
+  display: flex;
+  align-self: flex-start;
+  align-items: center;
+  justify-content: center;
+  margin-top: auto;
+  ${({ theme }) => theme.mediaQueries.small} {
+    width: 100%;
+  }
 `;
 
 const Span = styled.span`
@@ -101,6 +121,10 @@ const ErrorMessage = styled.div`
 
 const Index = () => {
   const [state, dispatch] = useContext(MetaMaskContext);
+  const [aaAddress, setAaAddress] = useState('');
+  const [aaBalance, setAABalance] = useState('');
+  const [aaSecondOwner, setAASecondOwner] = useState('');
+  const [aaDeployed, setAADeployed] = useState<boolean>();
 
   const handleConnectClick = async () => {
     try {
@@ -117,13 +141,17 @@ const Index = () => {
     }
   };
 
-  const handleSendHelloClick = async () => {
-    try {
-      await sendHello();
-    } catch (e) {
-      console.error(e);
-      dispatch({ type: MetamaskActions.SetError, payload: e });
-    }
+  // const handleSendHelloClick = async () => {
+  //   try {
+  //     await sendHello();
+  //   } catch (e) {
+  //     console.error(e);
+  //     dispatch({ type: MetamaskActions.SetError, payload: e });
+  //   }
+  // };
+
+  const handleCheckAAStateClick = async () => {
+    console.log('handleCheckAAStateClick');
   };
 
   return (
@@ -134,6 +162,17 @@ const Index = () => {
       <Subtitle>
         Get started by editing <code>src/index.ts</code>
       </Subtitle>
+      <Notice>
+        <Title>Your Bailout Account🔥</Title>
+        <div>Address: {aaAddress}</div>
+        <div>
+          Balance: {aaBalance !== '' && ethers.utils.formatEther(aaBalance)}
+        </div>
+        <div>
+          deployed: {aaDeployed !== undefined ? aaDeployed.toString() : ''}
+        </div>
+        <div>2FA: {aaSecondOwner}</div>
+      </Notice>
       <CardContainer>
         {state.error && (
           <ErrorMessage>
@@ -185,14 +224,15 @@ const Index = () => {
         )}
         <Card
           content={{
-            title: 'Send Hello message',
-            description:
-              'Display a custom message within a confirmation screen in MetaMask.',
+            title: 'Check Address & Balance',
+            description: 'You have to fund this address first',
             button: (
-              <SendHelloButton
-                onClick={handleSendHelloClick}
+              <Button
+                onClick={handleCheckAAStateClick}
                 disabled={!state.installedSnap}
-              />
+              >
+                Bailout Account status
+              </Button>
             ),
           }}
           disabled={!state.installedSnap}
