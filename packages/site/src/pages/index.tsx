@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { ethers } from 'ethers';
 import { BaseProvider } from '@metamask/providers';
 import { MetamaskActions, MetaMaskContext } from '../hooks';
@@ -8,7 +7,7 @@ import {
   changeNetwork,
   connectSnap,
   getSnap,
-  sendHello,
+  // sendHello,
   shouldDisplayReconnectButton,
 } from '../utils';
 
@@ -16,120 +15,21 @@ import {
   ConnectButton,
   InstallFlaskButton,
   ReconnectButton,
-  SendHelloButton,
+  // SendHelloButton,
   Card,
 } from '../components';
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-  margin-top: 7.6rem;
-  margin-bottom: 7.6rem;
-  ${({ theme }) => theme.mediaQueries.small} {
-    padding-left: 2.4rem;
-    padding-right: 2.4rem;
-    margin-top: 2rem;
-    margin-bottom: 2rem;
-    width: auto;
-  }
-`;
-
-const Heading = styled.h1`
-  margin-top: 0;
-  margin-bottom: 2.4rem;
-  text-align: center;
-`;
-
-const Title = styled.h2`
-  font-size: ${({ theme }) => theme.fontSizes.large};
-  margin: 0;
-  ${({ theme }) => theme.mediaQueries.small} {
-    font-size: ${({ theme }) => theme.fontSizes.text};
-  }
-`;
-
-const Input = styled.input`
-  padding: 0.5em;
-  margin: 0.5em;
-  background: papayawhip;
-  border: none;
-  border-radius: 3px;
-`;
-
-const Button = styled.button`
-  display: flex;
-  align-self: flex-start;
-  align-items: center;
-  justify-content: center;
-  margin-top: auto;
-  ${({ theme }) => theme.mediaQueries.small} {
-    width: 100%;
-  }
-`;
-
-const Span = styled.span`
-  color: ${(props) => props.theme.colors.primary.default};
-`;
-
-const Subtitle = styled.p`
-  font-size: ${({ theme }) => theme.fontSizes.large};
-  font-weight: 500;
-  margin-top: 0;
-  margin-bottom: 0;
-  ${({ theme }) => theme.mediaQueries.small} {
-    font-size: ${({ theme }) => theme.fontSizes.text};
-  }
-`;
-
-const CardContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  max-width: 64.8rem;
-  width: 100%;
-  height: 100%;
-  margin-top: 1.5rem;
-`;
-
-const Notice = styled.div`
-  background-color: ${({ theme }) => theme.colors.background.alternative};
-  border: 1px solid ${({ theme }) => theme.colors.border.default};
-  color: ${({ theme }) => theme.colors.text.alternative};
-  border-radius: ${({ theme }) => theme.radii.default};
-  padding: 2.4rem;
-  margin-top: 2.4rem;
-  max-width: 60rem;
-  width: 100%;
-
-  & > * {
-    margin: 0;
-  }
-  ${({ theme }) => theme.mediaQueries.small} {
-    margin-top: 1.2rem;
-    padding: 1.6rem;
-  }
-`;
-
-const ErrorMessage = styled.div`
-  background-color: ${({ theme }) => theme.colors.error.muted};
-  border: 1px solid ${({ theme }) => theme.colors.error.default};
-  color: ${({ theme }) => theme.colors.error.alternative};
-  border-radius: ${({ theme }) => theme.radii.default};
-  padding: 2.4rem;
-  margin-bottom: 2.4rem;
-  margin-top: 2.4rem;
-  max-width: 60rem;
-  width: 100%;
-  ${({ theme }) => theme.mediaQueries.small} {
-    padding: 1.6rem;
-    margin-bottom: 1.2rem;
-    margin-top: 1.2rem;
-    max-width: 100%;
-  }
-`;
+import {
+  Button,
+  CardContainer,
+  Container,
+  ErrorMessage,
+  Heading,
+  Input,
+  Notice,
+  Span,
+  Subtitle,
+  Title,
+} from '../components/StyledComponents';
 
 const Index = () => {
   const [state, dispatch] = useContext(MetaMaskContext);
