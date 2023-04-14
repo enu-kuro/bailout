@@ -111,21 +111,15 @@ const Index = () => {
   };
 
   useEffect(() => {
-    const init = async () => {
-      // TODO: mint pkp
-
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const pkpPublicKey = await create2FaWallet(googleCredential!.id_token!);
-        set2FaPkpPublicKey(pkpPublicKey);
-      } catch (e) {
-        console.error(e);
+    const set2Fa = async () => {
+      if (!googleCredential?.id_token) {
+        return;
       }
+      const pkpPublicKey = await create2FaWallet(googleCredential.id_token);
+      set2FaPkpPublicKey(pkpPublicKey);
     };
 
-    if (googleCredential?.id_token) {
-      init();
-    }
+    set2Fa();
   }, [googleCredential?.id_token]);
 
   const handleTransferClick = async () => {
