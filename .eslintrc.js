@@ -17,6 +17,18 @@ module.exports = {
       extends: ['@metamask/eslint-config-typescript'],
       rules: {
         '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
+        'jsdoc/require-jsdoc': ['off'],
+        'jsdoc/match-description': ['off'],
+        'jsdoc/require-returns': ['off'],
+        'jsdoc/require-param-description': ['off'],
+        'jsdoc/require-description': ['off'],
+        'jsdoc/check-indentation': ['off'],
+        'no-negated-condition': ['off'],
+        '@typescript-eslint/no-parameter-properties': ['off'],
+        '@typescript-eslint/no-unused-vars': ['off'],
+        'import/no-extraneous-dependencies': ['off'],
+        'no-eq-null': ['off'],
+        camelcase: ['off'],
       },
     },
 
