@@ -24,7 +24,7 @@ export const ChainId = {
   lit: '0x2AC49',
 };
 export const changeNetwork = async (chainId = ChainId.mumbai) => {
-  await window.ethereum.request({
+  return await window.ethereum.request({
     method: 'wallet_switchEthereumChain',
     params: [{ chainId }],
   });

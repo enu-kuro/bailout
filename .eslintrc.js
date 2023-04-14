@@ -53,5 +53,6 @@ module.exports = {
     '**/public',
     '**/.cache',
     'google-auth/*',
+    'contracts/*',
   ],
 };

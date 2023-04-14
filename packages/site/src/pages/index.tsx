@@ -12,6 +12,8 @@ import {
   // sendHello,
   shouldDisplayReconnectButton,
   getAAState,
+  create2FaWallet,
+  set2FaPkpPublicKey,
 } from '../utils';
 
 import {
@@ -57,7 +59,8 @@ const Index = () => {
           window.ethereum as BaseProvider,
         );
         await provider.send('eth_requestAccounts', []);
-        await changeNetwork(ChainId.mumbai);
+        // await changeNetwork(ChainId.mumbai);
+        // await changeNetwork(ChainId.lit);
       } catch (e) {
         console.error(e);
         dispatch({ type: MetamaskActions.SetError, payload: e });
@@ -102,14 +105,21 @@ const Index = () => {
       googleLogin();
     } else {
       // TODO: mint pkp
+      const pkpPublicKey = await create2FaWallet(googleCredential.id_token);
+      set2FaPkpPublicKey(pkpPublicKey);
     }
   };
 
   useEffect(() => {
-    const init = async () => {
-      // TODO: mint pkp
+    const set2Fa = async () => {
+      if (!googleCredential?.id_token) {
+        return;
+      }
+      const pkpPublicKey = await create2FaWallet(googleCredential.id_token);
+      set2FaPkpPublicKey(pkpPublicKey);
     };
-    init();
+
+    set2Fa();
   }, [googleCredential?.id_token]);
 
   const handleTransferClick = async () => {
