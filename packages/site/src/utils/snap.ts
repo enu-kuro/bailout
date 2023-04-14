@@ -112,12 +112,12 @@ export const getAAState = async () => {
 };
 
 export const create2FaWallet = async (credential: string) => {
-  // const { pkpPublicKey, pkpEthAddress } = await mintPKPWithCredential({
-  //   credential,
-  // });
-  const pkpEthAddress = '0x45D9C129B35f46310e4962bD92A1803998b9294b';
-  const pkpPublicKey = '';
-  // console.log('pkpPublicKey', pkpPublicKey);
+  const { pkpPublicKey, pkpEthAddress } = await mintPKPWithCredential({
+    credential,
+  });
+  // const pkpEthAddress = '0x45D9C129B35f46310e4962bD92A1803998b9294b';
+  // const pkpPublicKey = '';
+  console.log('pkpPublicKey', pkpPublicKey);
   console.log('pkpEthAddress', pkpEthAddress);
   const txHash = await set2Fa(pkpEthAddress);
   console.log('txHash', txHash);

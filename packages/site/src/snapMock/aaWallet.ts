@@ -72,18 +72,6 @@ export const getAAState = async () => {
   return { address, balance, secondOwner, deployed: true };
 };
 
-async function resolveObjectPromises(obj: any) {
-  const values = await Promise.all(Object.values(obj));
-  const resolvedObj = Object.assign({}, obj);
-  Object.keys(resolvedObj).forEach((key, index) => {
-    const value = values[index];
-    resolvedObj[key] = ethers.BigNumber.isBigNumber(value)
-      ? value.toString()
-      : value;
-  });
-  return resolvedObj;
-}
-
 export const set2Fa = async (address: string) => {
   await changeNetwork(ChainId.mumbai);
   console.log('set2Fa');
