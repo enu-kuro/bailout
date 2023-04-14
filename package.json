@@ -52,9 +52,14 @@
   },
   "dependencies": {
     "@account-abstraction/sdk": "^0.5.0",
+    "@ethersproject/abi": "^5.7.0",
+    "@ethersproject/bytes": "^5.7.0",
+    "@gnosis.pm/safe-contracts": "^1.3.0",
     "@react-oauth/google": "^0.9.0",
+    "@truffle/hdwallet-provider": "^2.1.9",
     "buffer": "^6.0.3",
     "dotenv": "^16.0.3",
+    "ethereumjs-util": "^7.1.5",
     "ethers": "^5.7.2",
     "google-auth-library": "^8.7.0"
   }
