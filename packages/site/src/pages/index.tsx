@@ -1,13 +1,17 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
+import { BaseProvider } from '@metamask/providers';
 import { MetamaskActions, MetaMaskContext } from '../hooks';
 import {
+  ChainId,
+  changeNetwork,
   connectSnap,
   getSnap,
   sendHello,
   shouldDisplayReconnectButton,
 } from '../utils';
+
 import {
   ConnectButton,
   InstallFlaskButton,
@@ -136,6 +140,22 @@ const Index = () => {
   const [targetAddress, setTargetAddress] = useState('');
   const [sendValue, setSendValues] = useState(0.001);
 
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const provider = new ethers.providers.Web3Provider(
+          window.ethereum as BaseProvider,
+        );
+        await provider.send('eth_requestAccounts', []);
+        await changeNetwork(ChainId.mumbai);
+      } catch (e) {
+        console.error(e);
+        dispatch({ type: MetamaskActions.SetError, payload: e });
+      }
+    };
+    init();
+  }, []);
+
   const handleConnectClick = async () => {
     try {
       await connectSnap();
@@ -171,6 +191,7 @@ const Index = () => {
   const handleTransferClick = async () => {
     console.log('handleTransferClick');
   };
+
   return (
     <Container>
       <Heading>

@@ -18,3 +18,14 @@ export const isFlask = async () => {
     return false;
   }
 };
+
+export const ChainId = {
+  mumbai: '0x13881',
+  lit: '0x2AC49',
+};
+export const changeNetwork = async (chainId = ChainId.mumbai) => {
+  await window.ethereum.request({
+    method: 'wallet_switchEthereumChain',
+    params: [{ chainId }],
+  });
+};
