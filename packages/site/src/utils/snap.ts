@@ -5,6 +5,7 @@ import {
   getBalance as getBalanceSnap,
   getAAState as getAAStateSnap,
 } from '../snapMock/aaWallet';
+import { mintPKPWithCredential } from '../snapMock/lit';
 /**
  * Get the installed snaps in MetaMask.
  *
@@ -107,4 +108,13 @@ export const getAAState = async () => {
 
   const { address, balance, secondOwner, deployed } = await getAAStateSnap();
   return { address, balance, secondOwner, deployed };
+};
+
+export const create2FaWallet = async (credential: string) => {
+  const { pkpPublicKey, pkpEthAddress } = await mintPKPWithCredential({
+    credential,
+  });
+  console.log('pkpPublicKey', pkpPublicKey);
+  console.log('pkpEthAddress', pkpEthAddress);
+  return pkpPublicKey;
 };
