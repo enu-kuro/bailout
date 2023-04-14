@@ -52,5 +52,6 @@ module.exports = {
     '**/build',
     '**/public',
     '**/.cache',
+    'google-auth/*',
   ],
 };
