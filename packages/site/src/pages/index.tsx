@@ -15,6 +15,10 @@ import {
   getAAState,
   create2FaWallet,
   set2FaPkpPublicKey,
+  setupSocialRecovery,
+  setSocialRecoveryPkpEthAddress,
+  setPkpIpfsCid,
+  setSocialRecoveryPkpPublicKey,
 } from '../utils';
 import {
   ConnectButton,
@@ -38,6 +42,7 @@ import {
 import { useGoogleAuth } from '../hooks/useGoogleAuth';
 
 export const DEFAULT_LIT_ACTION = ``;
+
 const Index = () => {
   const [state, dispatch] = useContext(MetaMaskContext);
   const [aaAddress, setAaAddress] = useState('');
@@ -138,6 +143,23 @@ const Index = () => {
 
   const handleSetupSocialRecoveryClick = async () => {
     console.log('handleSetupSocialRecoveryClick');
+    if (ipfsCid === '' || targetAddress === '') {
+      dispatch({
+        type: MetamaskActions.SetError,
+        payload: Error('IPFS CID or targetAddress is not available'),
+      });
+      return;
+    }
+    const { pkpPublicKey, pkpEthAddress, txHash } = await setupSocialRecovery({
+      targetAddress,
+      ipfsCid,
+    });
+    console.log('txHash', txHash);
+    console.log('pkpPublicKey', pkpPublicKey);
+    console.log('pkpEthAddress', pkpEthAddress);
+    setSocialRecoveryPkpEthAddress(pkpEthAddress);
+    setSocialRecoveryPkpPublicKey(pkpPublicKey);
+    setPkpIpfsCid(ipfsCid);
   };
 
   const handleExecuteSocialRecoveryClick = async () => {
