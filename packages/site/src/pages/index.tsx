@@ -46,6 +46,14 @@ const Title = styled.h2`
   }
 `;
 
+const Input = styled.input`
+  padding: 0.5em;
+  margin: 0.5em;
+  background: papayawhip;
+  border: none;
+  border-radius: 3px;
+`;
+
 const Button = styled.button`
   display: flex;
   align-self: flex-start;
@@ -125,6 +133,8 @@ const Index = () => {
   const [aaBalance, setAABalance] = useState('');
   const [aaSecondOwner, setAASecondOwner] = useState('');
   const [aaDeployed, setAADeployed] = useState<boolean>();
+  const [targetAddress, setTargetAddress] = useState('');
+  const [sendValue, setSendValues] = useState(0.001);
 
   const handleConnectClick = async () => {
     try {
@@ -154,6 +164,13 @@ const Index = () => {
     console.log('handleCheckAAStateClick');
   };
 
+  const handle2FaClick = async () => {
+    console.log('handle2FaClick');
+  };
+
+  const handleTransferClick = async () => {
+    console.log('handleTransferClick');
+  };
   return (
     <Container>
       <Heading>
@@ -233,6 +250,55 @@ const Index = () => {
               >
                 Bailout Account status
               </Button>
+            ),
+          }}
+          disabled={!state.installedSnap}
+          fullWidth={
+            state.isFlask &&
+            Boolean(state.installedSnap) &&
+            !shouldDisplayReconnectButton(state.installedSnap)
+          }
+        />
+        <Card
+          content={{
+            title: '2FA',
+            description: 'Set 2 factor auth',
+            button: (
+              <Button onClick={handle2FaClick} disabled={!state.installedSnap}>
+                Setup 2FA
+              </Button>
+            ),
+          }}
+          disabled={!state.installedSnap}
+          fullWidth={
+            state.isFlask &&
+            Boolean(state.installedSnap) &&
+            !shouldDisplayReconnectButton(state.installedSnap)
+          }
+        />
+        <Card
+          content={{
+            title: 'Transfer',
+            description: 'Transfer from Bailout Account',
+            button: (
+              <>
+                <label>
+                  Send to:
+                  <Input
+                    type="text"
+                    placeholder="target address"
+                    value={targetAddress}
+                    onChange={(e) => setTargetAddress(e.target.value)}
+                  />
+                </label>
+                <label>Value: {sendValue}</label>
+                <Button
+                  onClick={handleTransferClick}
+                  disabled={!state.installedSnap}
+                >
+                  Transfer
+                </Button>
+              </>
             ),
           }}
           disabled={!state.installedSnap}
