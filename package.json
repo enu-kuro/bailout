@@ -55,6 +55,7 @@
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/bytes": "^5.7.0",
     "@gnosis.pm/safe-contracts": "^1.3.0",
+    "@monaco-editor/react": "^4.5.0",
     "@react-oauth/google": "^0.9.0",
     "@truffle/hdwallet-provider": "^2.1.9",
     "buffer": "^6.0.3",
