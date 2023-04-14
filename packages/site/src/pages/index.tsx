@@ -33,6 +33,7 @@ import {
   Subtitle,
   Title,
 } from '../components/StyledComponents';
+import { useGoogleAuth } from '../hooks/useGoogleAuth';
 
 const Index = () => {
   const [state, dispatch] = useContext(MetaMaskContext);
@@ -42,6 +43,12 @@ const Index = () => {
   const [aaDeployed, setAADeployed] = useState<boolean>();
   const [targetAddress, setTargetAddress] = useState('');
   const [sendValue, setSendValues] = useState(0.001);
+
+  const {
+    googleLogin,
+    googleCredential,
+    status: googleLoginStatus,
+  } = useGoogleAuth();
 
   useEffect(() => {
     const init = async () => {
@@ -91,7 +98,19 @@ const Index = () => {
 
   const handle2FaClick = async () => {
     console.log('handle2FaClick');
+    if (!googleCredential?.id_token) {
+      googleLogin();
+    } else {
+      // TODO: mint pkp
+    }
   };
+
+  useEffect(() => {
+    const init = async () => {
+      // TODO: mint pkp
+    };
+    init();
+  }, [googleCredential?.id_token]);
 
   const handleTransferClick = async () => {
     console.log('handleTransferClick');
@@ -190,12 +209,15 @@ const Index = () => {
             title: '2FA',
             description: 'Set 2 factor auth',
             button: (
-              <Button onClick={handle2FaClick} disabled={!state.installedSnap}>
+              <Button
+                onClick={handle2FaClick}
+                // disabled={!state.installedSnap}
+              >
                 Setup 2FA
               </Button>
             ),
           }}
-          disabled={!state.installedSnap}
+          // disabled={!state.installedSnap}
           fullWidth={
             state.isFlask &&
             Boolean(state.installedSnap) &&
