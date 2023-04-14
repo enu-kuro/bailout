@@ -6,6 +6,8 @@ import {
   ChainId,
   changeNetwork,
   connectSnap,
+  getBalance,
+  getAddress,
   getSnap,
   // sendHello,
   shouldDisplayReconnectButton,
@@ -82,6 +84,10 @@ const Index = () => {
 
   const handleCheckAAStateClick = async () => {
     console.log('handleCheckAAStateClick');
+    const address = await getAddress();
+    console.log('aaAddress', address);
+    const balance = await getBalance();
+    console.log('aaBalance', balance);
   };
 
   const handle2FaClick = async () => {
@@ -167,13 +173,13 @@ const Index = () => {
             button: (
               <Button
                 onClick={handleCheckAAStateClick}
-                disabled={!state.installedSnap}
+                // disabled={!state.installedSnap}
               >
                 Bailout Account status
               </Button>
             ),
           }}
-          disabled={!state.installedSnap}
+          // disabled={!state.installedSnap}
           fullWidth={
             state.isFlask &&
             Boolean(state.installedSnap) &&

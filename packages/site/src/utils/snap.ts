@@ -1,6 +1,9 @@
 import { defaultSnapOrigin } from '../config';
 import { GetSnapsResponse, Snap } from '../types';
-
+import {
+  getAddress as getAaAddress,
+  getBalance as getAaBalance,
+} from '../snapMock/aaWallet';
 /**
  * Get the installed snaps in MetaMask.
  *
@@ -62,3 +65,27 @@ export const sendHello = async () => {
 };
 
 export const isLocalSnap = (snapId: string) => snapId.startsWith('local:');
+
+export const getAddress = async () => {
+  // return (await window.ethereum.request({
+  //   method: 'wallet_invokeSnap',
+  //   params: {
+  //     snapId: defaultSnapOrigin,
+  //     request: { method: 'connect' },
+  //   },
+  // })) as string;
+  return await getAaAddress();
+};
+
+export const getBalance = async (): Promise<string> => {
+  // const balance = (await window.ethereum.request({
+  //   method: 'wallet_invokeSnap',
+  //   params: {
+  //     snapId: defaultSnapOrigin,
+  //     request: { method: 'balance' },
+  //   },
+  // })) as string;
+  // return balance;
+  const address = await getAaAddress();
+  return getAaBalance(address);
+};
