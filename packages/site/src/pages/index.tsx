@@ -11,6 +11,7 @@ import {
   getSnap,
   // sendHello,
   shouldDisplayReconnectButton,
+  getAAState,
 } from '../utils';
 
 import {
@@ -37,7 +38,7 @@ const Index = () => {
   const [state, dispatch] = useContext(MetaMaskContext);
   const [aaAddress, setAaAddress] = useState('');
   const [aaBalance, setAABalance] = useState('');
-  const [aaSecondOwner, setAASecondOwner] = useState('');
+  const [aaSecondOwner, setAASecondOwner] = useState<string | null>();
   const [aaDeployed, setAADeployed] = useState<boolean>();
   const [targetAddress, setTargetAddress] = useState('');
   const [sendValue, setSendValues] = useState(0.001);
@@ -73,21 +74,19 @@ const Index = () => {
     }
   };
 
-  // const handleSendHelloClick = async () => {
-  //   try {
-  //     await sendHello();
-  //   } catch (e) {
-  //     console.error(e);
-  //     dispatch({ type: MetamaskActions.SetError, payload: e });
-  //   }
-  // };
-
   const handleCheckAAStateClick = async () => {
-    console.log('handleCheckAAStateClick');
-    const address = await getAddress();
-    console.log('aaAddress', address);
-    const balance = await getBalance();
-    console.log('aaBalance', balance);
+    const { address, balance, secondOwner, deployed } = await getAAState();
+    console.log(
+      'aa status',
+      address,
+      ethers.utils.formatEther(balance),
+      secondOwner,
+      deployed,
+    );
+    setAASecondOwner(secondOwner);
+    setAaAddress(address);
+    setAABalance(balance);
+    setAADeployed(deployed);
   };
 
   const handle2FaClick = async () => {
