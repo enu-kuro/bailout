@@ -4,9 +4,10 @@ import {
   getAddress as getAddressSnap,
   getBalance as getBalanceSnap,
   getAAState as getAAStateSnap,
-  set2Fa,
+  set2Fa as set2FaSnap,
+  setupSocialRecovery as setupSocialRecoverySnap,
 } from '../snapMock/aaWallet';
-import { mintPKPWithCredential } from '../snapMock/lit';
+import { mintPKPWithCredential, mintPKPWithIpfsCid } from '../snapMock/lit';
 /**
  * Get the installed snaps in MetaMask.
  *
@@ -119,7 +120,24 @@ export const create2FaWallet = async (credential: string) => {
   // const pkpPublicKey = '';
   console.log('pkpPublicKey', pkpPublicKey);
   console.log('pkpEthAddress', pkpEthAddress);
-  const txHash = await set2Fa(pkpEthAddress);
+  const txHash = await set2FaSnap(pkpEthAddress);
   console.log('txHash', txHash);
   return pkpPublicKey;
+};
+
+export const setupSocialRecovery = async ({
+  targetAddress,
+  ipfsCid,
+}: {
+  targetAddress: string;
+  ipfsCid: string;
+}) => {
+  const { pkpPublicKey, pkpEthAddress } = await mintPKPWithIpfsCid({ ipfsCid });
+  const txHash = '';
+  return { pkpPublicKey, pkpEthAddress, txHash };
+  // const txHash = setupSocialRecoverySnap({
+  //   targetAddress,
+  //   proverAddress: pkpEthAddress,
+  // });
+  // return { pkpPublicKey, pkpEthAddress, txHash };
 };

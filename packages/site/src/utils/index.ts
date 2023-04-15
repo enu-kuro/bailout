@@ -4,3 +4,4 @@ export * from './theme';
 export * from './localStorage';
 export * from './button';
 export * from './lit';
+export * from './socialRecoveryLitAction';

@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import { BaseProvider } from '@metamask/providers';
+import MonacoEditor from '@monaco-editor/react';
 import { MetamaskActions, MetaMaskContext } from '../hooks';
 import {
   ChainId,
@@ -14,8 +15,12 @@ import {
   getAAState,
   create2FaWallet,
   set2FaPkpPublicKey,
+  setupSocialRecovery,
+  setSocialRecoveryPkpEthAddress,
+  setPkpIpfsCid,
+  setSocialRecoveryPkpPublicKey,
+  socialRecoveryLitAction,
 } from '../utils';
-
 import {
   ConnectButton,
   InstallFlaskButton,
@@ -37,6 +42,8 @@ import {
 } from '../components/StyledComponents';
 import { useGoogleAuth } from '../hooks/useGoogleAuth';
 
+export const DEFAULT_LIT_ACTION = socialRecoveryLitAction;
+
 const Index = () => {
   const [state, dispatch] = useContext(MetaMaskContext);
   const [aaAddress, setAaAddress] = useState('');
@@ -45,6 +52,11 @@ const Index = () => {
   const [aaDeployed, setAADeployed] = useState<boolean>();
   const [targetAddress, setTargetAddress] = useState('');
   const [sendValue, setSendValues] = useState(0.001);
+  const [publicationId, setPublicationId] = useState('');
+  const [guardingUserId, setGuardingUserId] = useState('');
+  const [ipfsCid, setIpfsCid] = useState('');
+  const [socialRecoveryAddress, setSocialRecoveryAddress] = useState('');
+  const [code, setCode] = useState(DEFAULT_LIT_ACTION);
 
   const {
     googleLogin,
@@ -122,10 +134,38 @@ const Index = () => {
     set2Fa();
   }, [googleCredential?.id_token]);
 
+  const onEdit = (_code: string) => {
+    setCode(_code);
+  };
+
   const handleTransferClick = async () => {
     console.log('handleTransferClick');
   };
 
+  const handleSetupSocialRecoveryClick = async () => {
+    console.log('handleSetupSocialRecoveryClick');
+    if (ipfsCid === '' || targetAddress === '') {
+      dispatch({
+        type: MetamaskActions.SetError,
+        payload: Error('IPFS CID or targetAddress is not available'),
+      });
+      return;
+    }
+    const { pkpPublicKey, pkpEthAddress, txHash } = await setupSocialRecovery({
+      targetAddress,
+      ipfsCid,
+    });
+    console.log('txHash', txHash);
+    console.log('pkpPublicKey', pkpPublicKey);
+    console.log('pkpEthAddress', pkpEthAddress);
+    setSocialRecoveryPkpEthAddress(pkpEthAddress);
+    setSocialRecoveryPkpPublicKey(pkpPublicKey);
+    setPkpIpfsCid(ipfsCid);
+  };
+
+  const handleExecuteSocialRecoveryClick = async () => {
+    console.log('handleExecuteSocialRecoveryClick');
+  };
   return (
     <Container>
       <Heading>
@@ -266,6 +306,98 @@ const Index = () => {
             !shouldDisplayReconnectButton(state.installedSnap)
           }
         />
+        <Card
+          content={{
+            title: 'Social Recovery',
+            description: 'setup social recovery',
+            button: (
+              <div>
+                <div>
+                  <label>
+                    Publication ID:
+                    <Input
+                      type="text"
+                      placeholder="0x01-0x01"
+                      value={publicationId}
+                      onChange={(e) => setPublicationId(e.target.value)}
+                    />
+                  </label>
+                  <label>
+                    Guardian User ID:
+                    <Input
+                      type="text"
+                      placeholder="0x45ba"
+                      value={guardingUserId}
+                      onChange={(e) => setGuardingUserId(e.target.value)}
+                    />
+                  </label>
+                </div>
+                <label>
+                  Lit Action
+                  <MonacoEditor
+                    language="javascript"
+                    onChange={(_code) => onEdit(_code || '')}
+                    value={code}
+                    theme="vs-dark"
+                    height="300px"
+                  />
+                </label>
+                <Button
+                  onClick={() => {
+                    window.open(
+                      'https://explorer.litprotocol.com/create-action',
+                      '_blank',
+                    );
+                  }}
+                  // disabled={!state.installedSnap || googleCredential?.id_token}
+                >
+                  Upload Lit Action
+                </Button>
+                <label>
+                  IPFS CID:
+                  <Input
+                    type="text"
+                    placeholder="0x45ba"
+                    value={ipfsCid}
+                    onChange={(e) => setIpfsCid(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Social Recovery Address
+                  <Input
+                    type="text"
+                    placeholder="0x0000000000000000000000000000000000000000"
+                    value={socialRecoveryAddress}
+                    onChange={(e) => setSocialRecoveryAddress(e.target.value)}
+                  />
+                </label>
+                <Button
+                  onClick={handleSetupSocialRecoveryClick}
+                  disabled={!socialRecoveryAddress || !ipfsCid}
+                >
+                  Setup Social Recovery
+                </Button>
+              </div>
+            ),
+          }}
+          disabled={!state.installedSnap}
+          fullWidth={true}
+        />
+        <Card
+          content={{
+            title: 'Execute Social Recovery',
+            description: 'Send fund to social recovery address',
+            button: (
+              <Button
+                onClick={handleExecuteSocialRecoveryClick}
+                // disabled={!state.installedSnap || googleCredential?.id_token}
+              >
+                Excute
+              </Button>
+            ),
+          }}
+          disabled={!state.installedSnap}
+        ></Card>
         <Notice>
           <p>
             Please note that the <b>snap.manifest.json</b> and{' '}
