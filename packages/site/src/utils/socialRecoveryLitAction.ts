@@ -1,8 +1,8 @@
 export const socialRecoveryLitAction = `
 (() => {
   // Please rewrite the following variables!
-  const publicationId = '0x1f5c-0x48';
-  const guardianUserId = '0x01b411';
+  const publicationId = '0x80c4-0x01';
+  const guardianUserId = '0x80c4';
   // Your AA Wallet Address
   const targetAddress = '';
 
