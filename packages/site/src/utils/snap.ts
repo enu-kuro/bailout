@@ -133,9 +133,11 @@ export const setupSocialRecovery = async ({
   ipfsCid: string;
 }) => {
   const { pkpPublicKey, pkpEthAddress } = await mintPKPWithIpfsCid({ ipfsCid });
-  const txHash = setupSocialRecoverySnap({
-    targetAddress,
-    proverAddress: pkpEthAddress,
-  });
+  const txHash = '';
   return { pkpPublicKey, pkpEthAddress, txHash };
+  // const txHash = setupSocialRecoverySnap({
+  //   targetAddress,
+  //   proverAddress: pkpEthAddress,
+  // });
+  // return { pkpPublicKey, pkpEthAddress, txHash };
 };
