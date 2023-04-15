@@ -3,7 +3,8 @@ export const socialRecoveryLitAction = `
   // Please rewrite the following variables!
   const publicationId = '0x1f5c-0x48';
   const guardianUserId = '0x01b411';
-  const targetAddress = '0x951444F56EF94FeC42e8cDBeDef1A4Dc1D1ea63B';
+  // Your AA Wallet Address
+  const targetAddress = '';
 
   var __async = (__this, __arguments, generator) => {
     return new Promise((resolve, reject) => {
@@ -64,13 +65,11 @@ export const socialRecoveryLitAction = `
         });
         const txParams = {
           nonce: latestNonce,
-          gasPrice: '0x987b4b98',
-          gasLimit: '0x987b4b98',
+          gasPrice: '0x6fc23ac00', // 30gewi
+          gasLimit: '0xf4240', // 1000000wei max: 0.03eth
           to: targetAddress,
-          value: '0x38d7ea4c68000',
-          //0.001,
           chainId: 80001,
-          data: '0x',
+          data: '0x4deafa38',
         };
         LitActions.setResponse({ response: JSON.stringify(txParams) });
         const serializedTx = ethers.utils.serializeTransaction(txParams);

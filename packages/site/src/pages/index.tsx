@@ -20,7 +20,7 @@ import {
   setPkpIpfsCid,
   setSocialRecoveryPkpPublicKey,
   socialRecoveryLitAction,
-  getSocialRecoverySignature,
+  executeSocialRecovery,
   signWithPkp,
   get2FaPkpPublicKey,
   createUnsignedUserOp,
@@ -50,8 +50,7 @@ import {
 import { useGoogleAuth } from '../hooks/useGoogleAuth';
 
 const DEFAULT_LIT_ACTION = socialRecoveryLitAction;
-const DEFAULT_LIT_ACTION_IPFS_CID =
-  'QmXqnNtfcQMfTAqk8bWyR4n1Rtkkbgwg7rTPZLTKUYpd85';
+const DEFAULT_LIT_ACTION_IPFS_CID = '';
 const Index = () => {
   const [state, dispatch] = useContext(MetaMaskContext);
   const [aaAddress, setAaAddress] = useState('');
@@ -226,11 +225,11 @@ const Index = () => {
       });
       return;
     }
-    const socialRecoverySignature = await getSocialRecoverySignature({
+    const socialRecoveryReceipt = await executeSocialRecovery({
       pkpPublicKey: socialRecoveryPkpPublicKey,
       ipfsId: socialRecoveryIpfsCid,
     });
-    console.log('socialRecoverySignature', socialRecoverySignature);
+    console.log('socialRecoveryReceipt', socialRecoveryReceipt);
   };
   return (
     <Container>

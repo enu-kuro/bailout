@@ -1,5 +1,11 @@
-// import * as LitJsSdk from '@lit-protocol/lit-node-client';
-const LitJsSdk = {} as any;
+import * as LitJsSdk from '@lit-protocol/lit-node-client';
+// const LitJsSdk = {} as any;
+import { BaseProvider } from '@metamask/providers';
+import { serialize, UnsignedTransaction } from '@ethersproject/transactions';
+import { ethers } from 'ethers';
+import { ChainId, changeNetwork } from './metamask';
+
+// TODO: enable multiple accounts
 export const set2FaPkpPublicKey = async (pkpPublicKey: string) => {
   localStorage.setItem('2faPkpPublicKey', pkpPublicKey);
 };
@@ -50,36 +56,6 @@ export const getPkpIpfsCid = () => {
   }
   // TODO: error
   return '';
-};
-
-export const getSocialRecoverySignature = async ({
-  pkpPublicKey,
-  ipfsId,
-}: {
-  pkpPublicKey: string;
-  ipfsId: string;
-}) => {
-  const litNodeClient = new LitJsSdk.LitNodeClient({
-    litNetwork: 'serrano',
-    debug: true,
-  });
-  console.log('litNodeClient', litNodeClient);
-
-  await litNodeClient.connect();
-
-  const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain: 'mumbai' });
-
-  const results = await litNodeClient.executeJs({
-    ipfsId,
-    authSig,
-    jsParams: {
-      publicKey: pkpPublicKey,
-      sigName: 'sig1',
-    },
-  });
-  console.log('results', results);
-  // const txParams = results.response as UnsignedTransaction;
-  return results.signatures.sig1.signature as string;
 };
 
 const litActionCodeForSign = `
@@ -136,4 +112,52 @@ export const signWithPkp = async ({
   });
 
   return results.signatures.sig1.signature as string;
+};
+
+export const executeSocialRecovery = async ({
+  pkpPublicKey,
+  ipfsId,
+}: {
+  pkpPublicKey: string;
+  ipfsId: string;
+}) => {
+  await changeNetwork(ChainId.mumbai);
+  const litNodeClient = new LitJsSdk.LitNodeClient({
+    litNetwork: 'serrano',
+    debug: true,
+  });
+  console.log('litNodeClient', litNodeClient);
+
+  await litNodeClient.connect();
+
+  const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain: 'mumbai' });
+
+  // often get timeout error...
+  // {"errorKind":"Timeout","errorCode":"NodeJsTimeoutError","status":502,"message":"There was a timeout error executing the Javascript for this action","correlationId":"lit_05c152724478","details":["Your function exceeded the maximum runtime of 30000ms and was terminated."]}
+  const results = await litNodeClient.executeJs({
+    ipfsId,
+    authSig,
+    jsParams: {
+      publicKey: pkpPublicKey,
+      sigName: 'sig1',
+    },
+  });
+  console.log('results', results);
+  const socialRecoverytxParams = results.response as UnsignedTransaction;
+  const proverSignature = results.signatures.sig1.signature;
+
+  const provider = new ethers.providers.Web3Provider(
+    window.ethereum as BaseProvider,
+  );
+  const serializedTx = serialize(socialRecoverytxParams, proverSignature);
+  console.log('Execute Social Recovery!!!!!');
+  try {
+    const tx = await provider.sendTransaction(serializedTx);
+    const receipt = await tx.wait();
+    console.log('receipt', receipt);
+    return receipt;
+  } catch (e) {
+    console.log('error', e);
+  }
+  return '';
 };
