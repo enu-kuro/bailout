@@ -123,7 +123,7 @@ function getUserOpHash (op, entryPoint, chainId) {
 }
 
 contract("account test", (accounts) => {
-  it.only("single sig", async () => {
+  it("single sig", async () => {
     const walletAccountTestInstance = await WalletAccountTest.new();
     const entryPoint = walletAccountTestInstance.address;
     const accountOwner = web3.eth.accounts.create();
@@ -148,6 +148,43 @@ contract("account test", (accounts) => {
     const resultAfter = await walletAccountTestInstance.latestValidationData()
     assert.equal(resultAfter.toString(), "0", "error");
   });
+  it("set pkpAddress", async () => {
+    const pkpAddress = accounts[2]
+    const entryPoint = accounts[3]
+    const walletAccountInstance = await WalletAccount.new(entryPoint);
+    let tmp = await walletAccountInstance.pkpAddress();
+    assert.equal("0x0000000000000000000000000000000000000000", tmp, "error");
+    await walletAccountInstance.setPKPAddress(pkpAddress, {from: entryPoint});
+    tmp = await walletAccountInstance.pkpAddress();
+    assert.equal(pkpAddress.toString(), tmp, "error");
+  });
+  it("set escape", async () => {
+    const escapeAddress = accounts[2]
+    const entryPoint = accounts[3]
+    const walletAccountInstance = await WalletAccount.new(entryPoint);
+    let tmp = await walletAccountInstance.escapeAddress();
+    assert.equal("0x0000000000000000000000000000000000000000", tmp, "error");
+    await walletAccountInstance.setEscapeAddress(escapeAddress, {from: entryPoint});
+    tmp = await walletAccountInstance.escapeAddress();
+    assert.equal(escapeAddress.toString(), tmp, "error");
+  });
+
+  it("executeSocialRecovery", async () => {
+    const pkpAddress = accounts[2]
+    const entryPoint = accounts[3]
+    const escape = web3.eth.accounts.create();
+    const wallet = accounts[5]
+    const walletAccountInstance = await WalletAccount.new(entryPoint);
+    await web3.eth.sendTransaction({from: wallet, to: walletAccountInstance.address, value: "1000000000000000000"})
+    await walletAccountInstance.setPKPAddress(pkpAddress, {from: entryPoint});
+    await walletAccountInstance.setEscapeAddress(escape.address, {from: entryPoint});
+    let balance = await web3.eth.getBalance(escape.address);
+    assert.equal(balance.toString(), "0", "error");
+    await walletAccountInstance.executeSocialRecovery({from: pkpAddress})
+    balance = await web3.eth.getBalance(escape.address);
+    assert.equal(balance.toString(), "1000000000000000000", "error");
+  });
+
   it.skip("multi sig", async () => {
     const walletAccountTestInstance = await WalletAccountTest.new();
     const entryPoint = walletAccountTestInstance.address;
