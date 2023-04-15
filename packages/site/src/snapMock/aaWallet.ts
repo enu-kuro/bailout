@@ -69,8 +69,17 @@ export const getAAState = async () => {
   }
   const myContract = new Contract(address, WalletAccount.abi, aaProvider);
   const secondOwner = (await myContract.secondOwner()) as string;
+  const escapeAddress = (await myContract.escapeAddress()) as string;
+  const pkpAddress = (await myContract.pkpAddress()) as string;
 
-  return { address, balance, secondOwner, deployed: true };
+  return {
+    address,
+    balance,
+    secondOwner,
+    deployed: true,
+    socialRecoveryProverAddress: pkpAddress,
+    escapeAddress,
+  };
 };
 
 export const set2Fa = async (address: string) => {
@@ -95,21 +104,23 @@ export const set2Fa = async (address: string) => {
   console.log('account address', myAddress);
   const myContract = new Contract(myAddress, WalletAccount.abi, aaProvider);
   console.log('address', address);
-  // const op = await accountAPI.createSignedUserOp({
-  //   target: myAddress,
-  //   data: myContract.interface.encodeFunctionData('setSecondOwner', [address]),
-  //   maxPriorityFeePerGas: 0x2540be400, // 15gwei
-  //   maxFeePerGas: 0x6fc23ac00, // 30gewi
-  // });
 
-  const op = await accountAPI.createUnsignedUserOp({
+  const singedUserOp = await accountAPI.createSignedUserOp({
     target: myAddress,
     data: myContract.interface.encodeFunctionData('setSecondOwner', [address]),
     maxPriorityFeePerGas: 0x2540be400, // 15gwei
     maxFeePerGas: 0x6fc23ac00, // 30gewi
   });
 
-  console.log('signedUserOp', op);
+  // const op = await accountAPI.createUnsignedUserOp({
+  //   target: myAddress,
+  //   data: myContract.interface.encodeFunctionData('setSecondOwner', [address]),
+  //   maxPriorityFeePerGas: 0x2540be400, // 15gwei
+  //   maxFeePerGas: 0x6fc23ac00, // 30gewi
+  //   // gasLimit: 0x5543df729c000, // 1500000gwei
+  // });
+
+  // console.log('signedUserOp', op);
 
   // First transaction after deployment always fails. because of the gas??
   // // 0x048611 296465 0x7a120 500000
@@ -117,8 +128,10 @@ export const set2Fa = async (address: string) => {
   // // 45448
   // op.preVerificationGas = 45448 * 5;
 
-  const singedUserOp = await accountAPI.signUserOp(op);
+  // const singedUserOp = await accountAPI.signUserOp(op);
+
   console.log('singedUserOp', singedUserOp);
+
   const client = new HttpRpcClient(
     bundlerUrl,
     entryPointAddress,

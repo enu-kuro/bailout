@@ -65,6 +65,9 @@ const Index = () => {
   const [ipfsCid, setIpfsCid] = useState(DEFAULT_LIT_ACTION_IPFS_CID);
   const [socialRecoveryAddress, setSocialRecoveryAddress] = useState('');
   const [code, setCode] = useState(DEFAULT_LIT_ACTION);
+  const [aaSocialRecoveryProverAddress, setAASocialRecoveryProverAddress] =
+    useState<string | null>();
+  const [aaEscapeAddress, setAAEscapeAddress] = useState<string | null>();
 
   const {
     googleLogin,
@@ -105,7 +108,14 @@ const Index = () => {
   };
 
   const handleCheckAAStateClick = async () => {
-    const { address, balance, secondOwner, deployed } = await getAAState();
+    const {
+      address,
+      balance,
+      secondOwner,
+      deployed,
+      socialRecoveryProverAddress,
+      escapeAddress,
+    } = await getAAState();
     console.log(
       'aa status',
       address,
@@ -117,6 +127,8 @@ const Index = () => {
     setAaAddress(address);
     setAABalance(balance);
     setAADeployed(deployed);
+    setAASocialRecoveryProverAddress(socialRecoveryProverAddress);
+    setAAEscapeAddress(escapeAddress);
   };
 
   const handle2FaClick = async () => {
@@ -153,6 +165,7 @@ const Index = () => {
         type: MetamaskActions.SetError,
         payload: Error('Google credential is not available'),
       });
+      // googleLogin();
       return;
     }
 
@@ -237,6 +250,8 @@ const Index = () => {
           deployed: {aaDeployed !== undefined ? aaDeployed.toString() : ''}
         </div>
         <div>2FA: {aaSecondOwner}</div>
+        <div>Social Recovery Prover: {aaSocialRecoveryProverAddress}</div>
+        <div>Social Recovery Escape Address: {aaEscapeAddress}</div>
       </Notice>
       <CardContainer>
         {state.error && (

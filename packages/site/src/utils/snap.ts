@@ -111,8 +111,22 @@ export const getAAState = async () => {
   //   deployed: boolean;
   // };
 
-  const { address, balance, secondOwner, deployed } = await getAAStateSnap();
-  return { address, balance, secondOwner, deployed };
+  const {
+    address,
+    balance,
+    secondOwner,
+    deployed,
+    socialRecoveryProverAddress,
+    escapeAddress,
+  } = await getAAStateSnap();
+  return {
+    address,
+    balance,
+    secondOwner,
+    deployed,
+    socialRecoveryProverAddress,
+    escapeAddress,
+  };
 };
 
 export const create2FaWallet = async (credential: string) => {
@@ -164,11 +178,11 @@ export const setupSocialRecovery = async ({
   ipfsCid: string;
 }) => {
   const { pkpPublicKey, pkpEthAddress } = await mintPKPWithIpfsCid({ ipfsCid });
-  const txHash = '';
-  return { pkpPublicKey, pkpEthAddress, txHash };
-  // const txHash = setupSocialRecoverySnap({
-  //   socialRecoveryAddress,
-  //   proverAddress: pkpEthAddress,
-  // });
+  // const txHash = '';
   // return { pkpPublicKey, pkpEthAddress, txHash };
+  const txHash = setupSocialRecoverySnap({
+    targetAddress: socialRecoveryAddress,
+    proverAddress: pkpEthAddress,
+  });
+  return { pkpPublicKey, pkpEthAddress, txHash };
 };
