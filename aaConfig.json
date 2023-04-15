@@ -2,6 +2,6 @@
   "bundlerUrl": "https://node.stackup.sh/v1/rpc/fa76279a35fc476de50d511035a190dbe3e082421f420c520c59fb390e8bb11d",
   "rpcUrl": "https://node.stackup.sh/v1/rpc/fa76279a35fc476de50d511035a190dbe3e082421f420c520c59fb390e8bb11d",
   "entryPoint": "0x0576a174D229E3cFA37253523E645A78A0C91B57",
-  "walletAccountFactory": "0x9b5831F93E35a1Fcb1FFDf15ee5192995017101d",
+  "walletAccountFactory": "0xA760166AE397202CFC64c274E132c239a4834728",
   "paymasterUrl": ""
 }
