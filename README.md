@@ -52,6 +52,9 @@ https://github.com/enu-kuro/bailout/blob/d644b2dddb5fef3014d67e804493be8c72c12cc
 Sign this Unsigned Userop with EOA and concatenate both signatures and send the transaction to the bundler using transfer:  
 https://github.com/enu-kuro/bailout/blob/d644b2dddb5fef3014d67e804493be8c72c12cc5/packages/site/src/snapMock/aaWallet.ts#L193
 
+The contract-side implementation of 2FA (multisig) verification is in _validateSignature and extractECDSASignature function. The implementation is not fully completed and is currently commented out.  
+https://github.com/enu-kuro/bailout/blob/d644b2dddb5fef3014d67e804493be8c72c12cc5/account-abstraction/contracts/samples/WalletAccount.sol#L211
+
 Note that 2FA is not yet implemented on the Contract side, so the verification process is currently skipped.
 
 ## Social Recovery
