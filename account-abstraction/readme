@@ -1,0 +1,30 @@
+1.カレントディレクトリでyarnを実行して必要なライブラリをインストールする
+2.truffle compileでコンパイル
+3..envファイルの設定
+4.truffle migrate --network mumbaiでデプロイ
+
+```
+   Deploying 'WalletAccountFactory'
+   --------------------------------
+   > transaction hash:    0x8364ba75c8be7e54e5bb513b1d077ab445443fc7755b45f61ffabbc3b5cf94b9
+   > Blocks: 2            Seconds: 4
+   > contract address:    0x471C97a9E835BF2c46A78d526b8F5afa00AAA006
+   > block number:        34060589
+   > block timestamp:     1680833469
+   > account:             0x5E83B4DaF1dA8a8E9E9138e1BE8a7D21F97F590f
+   > balance:             1.330535921539524032
+   > gas used:            3774498 (0x399822)
+   > gas price:           2.500000016 gwei
+   > value sent:          0 ETH
+   > total cost:          0.009436245060391968 ETH
+
+   Pausing for 2 confirmations...
+   ```
+独自に実装したFactory、およびアカウントコントラクトを、stackupのAAから実行する方法
+１.https://docs.stackup.sh/docs/guides/quickstart
+　に従って作業を進める
+
+2.config.jsonを作成した後、simpleAccountFactoryを作成したFactoryに書き換える
+
+// test
+truffle test
