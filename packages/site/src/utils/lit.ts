@@ -1,5 +1,5 @@
-import * as LitJsSdk from '@lit-protocol/lit-node-client';
-// const LitJsSdk = {} as any;
+// import * as LitJsSdk from '@lit-protocol/lit-node-client';
+const LitJsSdk = {} as any;
 export const set2FaPkpPublicKey = async (pkpPublicKey: string) => {
   localStorage.setItem('2faPkpPublicKey', pkpPublicKey);
 };
