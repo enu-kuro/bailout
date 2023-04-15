@@ -20,12 +20,12 @@ To enable Google authentication, also run `yarn start` in the "/google-auth" dir
 
 ### Setting up 2FA
 
-```
+***
 To set up 2FA, create a private key less MPC wallet utilizing Lit Protocol.
 Actually it's not a private key less: the Lit nodes manage private keys in a distributed manner. 
 Users can sign transactions with this private key using Web2 Auth like Google. 
 Set the ETH address of the wallet contract as the 2FA address.
-```
+***
 
 To mint PKP for 2FA, use mintPKPWithCredential:  
 https://github.com/enu-kuro/bailout/blob/d644b2dddb5fef3014d67e804493be8c72c12cc5/packages/site/src/snapMock/lit.ts#L85
@@ -39,9 +39,9 @@ Note that the first contract call always fails for some reason, so we need to ca
 
 
 ### Verifying 2FA
-```
+***
 Our approach is to concatenate the signatures of the EOA and the 2FA PKP and put them in the signature field of the UserOp. On the contract side, we will split them and verify the signature of the EOA and the 2FA PKP separately."
-```
+***
 
 To verify 2FA, create an Unsigned UserOp using createUnsignedUserOp:  
 https://github.com/enu-kuro/bailout/blob/d644b2dddb5fef3014d67e804493be8c72c12cc5/packages/site/src/snapMock/aaWallet.ts#L151
@@ -58,11 +58,11 @@ https://github.com/enu-kuro/bailout/blob/d644b2dddb5fef3014d67e804493be8c72c12cc
 Note that 2FA is not yet implemented on the Contract side, so the verification process is currently skipped.
 
 ## Social Recovery
-```
+***
 Our approach to social recovery involves creating a Lit Action that allows a PKP to sign a transaction only if specific Lens users (guardians) react to a specific publication. This transaction calls a function on the AA contract that moves all funds to the escaped address.
 
 If you fund the PKP in advance, you can execute the social recovery function gaslessly. We believe this is a novel idea because when you need social recovery, you may not have any funds available.
-```
+***
 
 ### Setting up Social Recovery
 
