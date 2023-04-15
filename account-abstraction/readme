@@ -4,22 +4,36 @@
 4.truffle migrate --network mumbaiでデプロイ
 
 ```
+1_migration.js
+==============
+
    Deploying 'WalletAccountFactory'
    --------------------------------
-   > transaction hash:    0x8364ba75c8be7e54e5bb513b1d077ab445443fc7755b45f61ffabbc3b5cf94b9
-   > Blocks: 2            Seconds: 4
-   > contract address:    0x471C97a9E835BF2c46A78d526b8F5afa00AAA006
-   > block number:        34060589
-   > block timestamp:     1680833469
-   > account:             0x5E83B4DaF1dA8a8E9E9138e1BE8a7D21F97F590f
-   > balance:             1.330535921539524032
-   > gas used:            3774498 (0x399822)
-   > gas price:           2.500000016 gwei
+   > transaction hash:    0x55ecabe4451d131bee7bc28dfa0974aeb4325a5dbfb64873979fd9de27d45f05
+   > Blocks: 2            Seconds: 5
+   > contract address:    0xA760166AE397202CFC64c274E132c239a4834728
+   > block number:        34393210
+   > block timestamp:     1681540289
+   > account:             0xE152E21Aa68B3a4F158CcCA323fa3b16a235986A
+   > balance:             1.279934744387965717
+   > gas used:            4212621 (0x40478d)
+   > gas price:           2.500000015 gwei
    > value sent:          0 ETH
-   > total cost:          0.009436245060391968 ETH
+   > total cost:          0.010531552563189315 ETH
 
    Pausing for 2 confirmations...
-   ```
+
+   -------------------------------
+   > confirmation number: 2 (block: 34393213)
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:     0.010531552563189315 ETH
+
+Summary
+=======
+> Total deployments:   1
+> Final cost:          0.010531552563189315 ETH
+```
 独自に実装したFactory、およびアカウントコントラクトを、stackupのAAから実行する方法
 １.https://docs.stackup.sh/docs/guides/quickstart
 　に従って作業を進める
