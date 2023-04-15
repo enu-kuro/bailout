@@ -109,3 +109,28 @@ https://github.com/enu-kuro/bailout/blob/3ea03fa733b11d43cf715230e25a2b75e1cd2a9
 (Note that this function currently only moves native tokens.)
 
 
+
+
+
+## MetaMask Snaps
+
+We conducted extensive research on previous MetaMask Snaps Hackathon products, and drew inspiration mainly from these two products while developing our product, Bailout. 
+
+- AA Snap: Democratizing Account Abstraction  
+https://metamask.io/news/developers/aa-snap-democratizing-account-abstraction/
+
+- MPC Snap: Integrating Multi-Factor Authentication Into MetaMask  
+https://metamask.io/news/developers/mpc-snap-integrating-multi-factor-authentication-into-metamask/
+
+
+Our objective was to provide users with the same user experience as the current MetaMask wallet, while allowing them to use their AA wallet in a similar manner. However, we found that it was not feasible with the current MetaMask Snaps functionality.
+
+In our case, we had to write some logic outside of the snap environment, such as Google Auth and Lit Protocol SDK. The biggest challenge, however, was that users and dapps couldn't use AA wallets in the same way as EOA normal accounts. It would be great if developers could extend MetaMask EOA by utilizing Account Abstraction, and users and dapps could use it in the same way as EOA normal accounts.
+
+We believe that it's feasible to simply display the balance of AA wallets in the MetaMask UI, and that other security-related features, such as 2FA signing, could be implemented through a combination of MetaMask and AA wallet app. For instance, when dapps request signing, MetaMask could relay the request to the AA wallet app, users could approve the request in the AA wallet app, and the AA wallet app could then send the signature to MetaMask, which could finally respond to the dapp with the required signatures for ERC-1271.
+
+### Implementation
+
+Unfortunately, we were unable to solve the issue, "Illegal invocation", during ETHGlobal Tokyo.   
+https://github.com/MetaMask/snaps-monorepo/issues/1345   
+Therefore, we implemented all the logics outside of the Snap environment. All logics under the packages/site/src/snapMock directory are originally　intended to be implemented within the Snap environment.
