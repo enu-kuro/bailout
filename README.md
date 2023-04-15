@@ -71,7 +71,7 @@ https://github.com/enu-kuro/bailout/blob/d644b2dddb5fef3014d67e804493be8c72c12cc
 
 Note that 2FA is not yet implemented on the Contract side, so the verification process is currently skipped.
 
-## Social Recovery
+## (Gasless)Social Recovery
 ***
 Our approach to social recovery involves creating a Lit Action that allows a PKP to sign a transaction only if specific Lens users (guardians) react to a specific publication. This transaction calls a function on the AA contract that moves all funds to the escaped address.
 
