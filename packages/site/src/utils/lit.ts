@@ -1,9 +1,9 @@
-import * as LitJsSdk from '@lit-protocol/lit-node-client';
-// const LitJsSdk = {} as any;
 import { BaseProvider } from '@metamask/providers';
 import { serialize, UnsignedTransaction } from '@ethersproject/transactions';
 import { ethers } from 'ethers';
+import * as LitJsSdk from '@lit-protocol/lit-node-client';
 import { ChainId, changeNetwork } from './metamask';
+// const LitJsSdk = {} as any;
 
 // TODO: enable multiple accounts
 export const set2FaPkpPublicKey = async (pkpPublicKey: string) => {
@@ -154,7 +154,7 @@ export const executeSocialRecovery = async ({
   try {
     const tx = await provider.sendTransaction(serializedTx);
     const receipt = await tx.wait();
-    console.log('receipt', receipt);
+    // console.log('receipt', receipt);
     return receipt;
   } catch (e) {
     console.log('error', e);

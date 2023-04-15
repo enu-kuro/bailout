@@ -107,6 +107,7 @@ const Index = () => {
   };
 
   const handleCheckAAStateClick = async () => {
+    console.log('handleCheckAAStateClick');
     const {
       address,
       balance,
@@ -282,7 +283,7 @@ const Index = () => {
                 />
               ),
             }}
-            disabled={!state.isFlask}
+            disabled={!state.isFlask || true}
           />
         )}
         {shouldDisplayReconnectButton(state.installedSnap) && (

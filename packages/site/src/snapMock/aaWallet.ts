@@ -47,6 +47,7 @@ export const getBalance = async (address: string): Promise<string> => {
 };
 
 export const getAAState = async () => {
+  await changeNetwork(ChainId.mumbai);
   const aaProvider = new ethers.providers.JsonRpcProvider(config.rpcUrl);
 
   const ethProvider = new ethers.providers.Web3Provider(
@@ -65,7 +66,7 @@ export const getAAState = async () => {
 
   const code = await ethProvider.getCode(address);
   if (code === '0x') {
-    return { address, balance, secondOwner: null, deployed: false };
+    return { address, balance, deployed: false };
   }
   const myContract = new Contract(address, WalletAccount.abi, aaProvider);
   const secondOwner = (await myContract.secondOwner()) as string;
@@ -107,10 +108,18 @@ export const set2Fa = async (address: string) => {
 
   const singedUserOp = await accountAPI.createSignedUserOp({
     target: myAddress,
-    data: myContract.interface.encodeFunctionData('setSecondOwner', [address]),
+    value: 0,
+    data: '0x',
     maxPriorityFeePerGas: 0x2540be400, // 15gwei
     maxFeePerGas: 0x6fc23ac00, // 30gewi
   });
+
+  // const singedUserOp = await accountAPI.createSignedUserOp({
+  //   target: myAddress,
+  //   data: myContract.interface.encodeFunctionData('setSecondOwner', [address]),
+  //   maxPriorityFeePerGas: 0x2540be400, // 15gwei
+  //   maxFeePerGas: 0x6fc23ac00, // 30gewi
+  // });
 
   // const op = await accountAPI.createUnsignedUserOp({
   //   target: myAddress,
@@ -142,9 +151,21 @@ export const set2Fa = async (address: string) => {
   console.log(`UserOpHash: ${uoHash}`);
 
   console.log('Waiting for transaction...');
-  const txHash = await accountAPI.getUserOpReceipt(uoHash);
+  const txHash = await accountAPI.getUserOpReceipt(uoHash, 10000);
   console.log(`Transaction hash: ${txHash}`);
 
+  const singedUserOp2 = await accountAPI.createSignedUserOp({
+    target: myAddress,
+    data: myContract.interface.encodeFunctionData('setSecondOwner', [address]),
+    maxPriorityFeePerGas: 0x2540be400, // 15gwei
+    maxFeePerGas: 0x6fc23ac00, // 30gewi
+  });
+  const uoHash2 = await client.sendUserOpToBundler(singedUserOp2);
+  console.log(`UserOpHash: ${uoHash}`);
+
+  console.log('Waiting for transaction...');
+  const txHash2 = await accountAPI.getUserOpReceipt(uoHash2);
+  console.log(`Transaction hash: ${txHash2}`);
   return txHash;
 };
 
@@ -264,7 +285,7 @@ export const setupSocialRecovery = async ({
   const myAddress = await accountAPI.getAccountAddress();
   const myContract = new Contract(myAddress, WalletAccount.abi, aaProvider);
 
-  // TODO:
+  // TODO: 2FA
   const op = await accountAPI.createSignedUserOp({
     target: myAddress,
     data: myContract.interface.encodeFunctionData('setupSocialRecovery', [
