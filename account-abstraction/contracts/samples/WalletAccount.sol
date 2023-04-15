@@ -35,7 +35,12 @@ contract WalletAccount is
   address public owner;
   // 本当は配列でオーナーの概念を持たせるべきだが、今回のマルチシグは2人のみなのでこうする
   address public secondOwner;
-  event SecondWoner(address secondOwner);
+  // PKPからのアクセスかどうかをチェックするためのアドレス
+  address public pkpAddress;
+  // 逃げ先のアドレス
+  address public escapeAddress;
+
+  event SecondOwner(address secondOwner);
 
   IEntryPoint private immutable _entryPoint;
 
@@ -128,7 +133,33 @@ contract WalletAccount is
     // TODO: enable changing secondOwner
     require(secondOwner == address(0), 'secondOwner already set');
     secondOwner = _secondOwner;
-    emit SecondWoner(secondOwner);
+    emit SecondOwner(secondOwner);
+  }
+
+  // 逃げ先のアドレスをセットするための関数
+  function setEscapeAddress(address _escapeAddress) external {
+    _requireFromEntryPointOrThis();
+    escapeAddress = _escapeAddress;
+  }
+
+  function executeSocialRecovery() external {
+    _onlyPKP();
+    require(escapeAddress != address(0), 'escape is not set');
+    payable(escapeAddress).transfer(address(this).balance);
+    // ERC20
+    // IEC20(address).transfer(escapeAddress, 0);
+    // ERC721
+    //IEC721(address).transferFrom(address(this), escapeAddress, 0);
+  }
+
+  // PKPアドレスをセットするための関数
+  function setPKPAddress(address _pkpAddress) external {
+    _requireFromEntryPointOrThis();
+    pkpAddress = _pkpAddress;
+  }
+
+  function _onlyPKP() internal view {
+    require(msg.sender == pkpAddress, 'only PKP');
   }
 
   // Require the function call went through EntryPoint or owner
@@ -136,6 +167,13 @@ contract WalletAccount is
     require(
       msg.sender == address(entryPoint()) || msg.sender == owner,
       'account: not Owner or EntryPoint'
+    );
+  }
+
+  function _requireFromEntryPointOrThis() internal view {
+    require(
+      msg.sender == address(entryPoint()) || msg.sender == address(this),
+      'account: not this or EntryPoint'
     );
   }
 
