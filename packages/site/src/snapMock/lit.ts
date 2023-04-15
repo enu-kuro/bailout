@@ -6,7 +6,7 @@ import {
   Signer,
   utils,
 } from 'ethers';
-import { toUtf8Bytes } from 'ethers/lib/utils';
+import { base58, toUtf8Bytes } from 'ethers/lib/utils';
 import PKPNFTABI from '../../../../contracts/PKPNFT.json';
 import PKPHelperABI from '../../../../contracts/PKPHelper.json';
 import { ChainId, changeNetwork } from '../utils';
@@ -75,6 +75,7 @@ const getPkpNftContract = () => {
 };
 
 export async function mintPKPWithIpfsCid({ ipfsCid }: { ipfsCid: string }) {
+  console.log('mintPKPWithIpfsCid');
   return await mintPKP({
     authMethodType: AuthMethodType.LitAction,
     idForAuthMethod: ipfsCid,
@@ -121,14 +122,20 @@ async function mintPKP({
     const pkpHelper = getPkpHelperContract().connect(signer);
     const pkpNft = getPkpNftContract().connect(signer);
 
-    // first get mint cost
     const mintCost = await pkpNft.mintCost();
 
+    console.log(idForAuthMethod);
     // it doesn't return tx.
+
+    let encodedIdForAuthMethod: string | Uint8Array = idForAuthMethod;
+    if (authMethodType === AuthMethodType.LitAction) {
+      encodedIdForAuthMethod = base58.decode(idForAuthMethod);
+    }
+
     const tx = (await pkpHelper.mintNextAndAddAuthMethods(
       2,
       [authMethodType],
-      [idForAuthMethod],
+      [encodedIdForAuthMethod],
       ['0x'],
       [[ethers.BigNumber.from('0')]],
       true,

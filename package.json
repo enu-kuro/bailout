@@ -23,8 +23,7 @@
     "lint:fix": "yarn lint:eslint --fix && yarn lint:misc --write",
     "lint:misc": "prettier '**/*.json' '**/*.md' '!**/CHANGELOG.md' '**/*.yml' --ignore-path .gitignore",
     "start": "yarn workspaces foreach --parallel --interlaced --verbose run start",
-    "test": "echo \"TODO\"",
-    "postinstall": "patch-package"
+    "test": "echo \"TODO\""
   },
   "devDependencies": {
     "@metamask/eslint-config": "^10.0.0",
@@ -55,6 +54,7 @@
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/bytes": "^5.7.0",
     "@gnosis.pm/safe-contracts": "^1.3.0",
+    "@lit-protocol/lit-node-client": "2.1.120",
     "@monaco-editor/react": "^4.5.0",
     "@react-oauth/google": "^0.9.0",
     "@truffle/hdwallet-provider": "^2.1.9",
