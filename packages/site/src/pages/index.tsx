@@ -59,8 +59,8 @@ const Index = () => {
   const [aaDeployed, setAADeployed] = useState<boolean>();
   const [targetAddress, setTargetAddress] = useState('');
   const [sendValue, setSendValue] = useState(0.001);
-  const [publicationId, setPublicationId] = useState('');
-  const [guardingUserId, setGuardingUserId] = useState('');
+  const [publicationId, setPublicationId] = useState('0x80c4-0x01');
+  const [guardingUserId, setGuardingUserId] = useState('0x80c4');
   const [ipfsCid, setIpfsCid] = useState(DEFAULT_LIT_ACTION_IPFS_CID);
   const [socialRecoveryAddress, setSocialRecoveryAddress] = useState('');
   const [code, setCode] = useState(DEFAULT_LIT_ACTION);
@@ -234,12 +234,10 @@ const Index = () => {
   };
   return (
     <Container>
-      <Heading>
-        Welcome to <Span>template-snap</Span>
-      </Heading>
-      <Subtitle>
+      <Heading>BAILOUT🔥</Heading>
+      {/* <Subtitle>
         Get started by editing <code>src/index.ts</code>
-      </Subtitle>
+      </Subtitle> */}
       <Notice>
         <Title>Your Bailout Account🔥</Title>
         <div>Address: {aaAddress}</div>

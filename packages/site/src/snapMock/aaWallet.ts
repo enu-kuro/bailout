@@ -151,7 +151,7 @@ export const set2Fa = async (address: string) => {
   console.log(`UserOpHash: ${uoHash}`);
 
   console.log('Waiting for transaction...');
-  const txHash = await accountAPI.getUserOpReceipt(uoHash, 10000);
+  const txHash = await accountAPI.getUserOpReceipt(uoHash, 1000, 1000);
   console.log(`Transaction hash: ${txHash}`);
 
   const singedUserOp2 = await accountAPI.createSignedUserOp({
@@ -164,7 +164,7 @@ export const set2Fa = async (address: string) => {
   console.log(`UserOpHash: ${uoHash}`);
 
   console.log('Waiting for transaction...');
-  const txHash2 = await accountAPI.getUserOpReceipt(uoHash2);
+  const txHash2 = await accountAPI.getUserOpReceipt(uoHash2, 10000);
   console.log(`Transaction hash: ${txHash2}`);
   return txHash;
 };
