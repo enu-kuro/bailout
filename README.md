@@ -1,20 +1,34 @@
+# Bailout
 
-## How to build?
+Bailout is a security pipeline that securely moves assets between EOA, Contract Wallet, and Cold Wallet. In order for individual investors to securely handle EOAs such as MetaMask, Bailout provides Contract Wallet where main assets can be stored and the function to eject assets to Cold Wallet with a single click even in case of loss of the private key.
 
-Run `yarn install`.
+## How to build
 
-To build, please note that we have encountered a strange Webpack build bug when building the @lit-protocol SDK in the normal way.  
-To solve it, comment out the following line:  
-`import * as LitJsSdk from '@lit-protocol/lit-node-client';`  
-and add the following line in lit.ts:  
-`const LitJsSdk = {} as any;`  
-https://github.com/enu-kuro/bailout/blob/main/packages/site/src/utils/lit.ts
+#### 1. Install Packages
+```bash
+$ yarn install
+```
 
-After making these changes, run yarn start.  
- Once the app starts, you can revert the changes and Webpack will rebuild the app without errors.  
+#### 2. Change the file `./packages/site/src/utils/lit.ts`
+To build, please note that we have encountered a strange Webpack build bug when building the @lit-protocol SDK in the normal way. 
+```typescript
+...
+// ↓comment out
+// import * as LitJsSdk from '@lit-protocol/lit-node-client';
 
-To enable Google authentication, also run `yarn start` in the "/google-auth" directory.  
+// ↓uncomment out
+const LitJsSdk = {} as any;
+...
+```
 
+#### 3. Run 
+```bash
+$ yarn start
+```
+
+Once the app starts, you can revert the changes and Webpack will rebuild the app without errors.  
+
+To enable Google authentication, also run `yarn start` in the `./google-auth` directory.
 
 ## 2 Factor Authentication
 
