@@ -133,4 +133,4 @@ We believe that it's feasible to simply display the balance of AA wallets in the
 
 Unfortunately, we were unable to solve the issue, "Illegal invocation", during ETHGlobal Tokyo.   
 https://github.com/MetaMask/snaps-monorepo/issues/1345   
-Therefore, we implemented all the logics outside of the Snap environment. All logics under the packages/site/src/snapMock directory are originally　intended to be implemented within the Snap environment.
+Therefore, we implemented all the logics outside of the Snap environment. All logics under the packages/site/src/snapMock directory are originally intended to be implemented within the Snap environment.
