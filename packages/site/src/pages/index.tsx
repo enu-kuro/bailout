@@ -19,6 +19,7 @@ import {
   setSocialRecoveryPkpEthAddress,
   setPkpIpfsCid,
   setSocialRecoveryPkpPublicKey,
+  socialRecoveryLitAction,
 } from '../utils';
 import {
   ConnectButton,
@@ -41,7 +42,7 @@ import {
 } from '../components/StyledComponents';
 import { useGoogleAuth } from '../hooks/useGoogleAuth';
 
-export const DEFAULT_LIT_ACTION = ``;
+export const DEFAULT_LIT_ACTION = socialRecoveryLitAction;
 
 const Index = () => {
   const [state, dispatch] = useContext(MetaMaskContext);
