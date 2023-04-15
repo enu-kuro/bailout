@@ -101,7 +101,7 @@ contract WalletAccount is
 
   // function getUserOperationHash(UserOperation calldata userOp) public pure returns (bytes32) {
   //   return keccak256(abi.encodePacked(userOp));
-  // } 
+  // }
 
   //   function getEthSignedMessageHash(bytes32 _messageHash)
   //       public
@@ -137,9 +137,23 @@ contract WalletAccount is
   }
 
   // 逃げ先のアドレスをセットするための関数
-  function setEscapeAddress(address _escapeAddress) external {
+  // function setEscapeAddress(address _escapeAddress) external {
+  //   _requireFromEntryPointOrThis();
+  //   escapeAddress = _escapeAddress;
+  // }
+  // PKPアドレスをセットするための関数
+  // function setPKPAddress(address _pkpAddress) external {
+  //   _requireFromEntryPointOrThis();
+  //   pkpAddress = _pkpAddress;
+  // }
+
+  function setupSocialRecovery(
+    address _escapeAddress,
+    address _pkpAddress
+  ) external {
     _requireFromEntryPointOrThis();
     escapeAddress = _escapeAddress;
+    pkpAddress = _pkpAddress;
   }
 
   function executeSocialRecovery() external {
@@ -150,12 +164,6 @@ contract WalletAccount is
     // IEC20(address).transfer(escapeAddress, 0);
     // ERC721
     //IEC721(address).transferFrom(address(this), escapeAddress, 0);
-  }
-
-  // PKPアドレスをセットするための関数
-  function setPKPAddress(address _pkpAddress) external {
-    _requireFromEntryPointOrThis();
-    pkpAddress = _pkpAddress;
   }
 
   function _onlyPKP() internal view {
@@ -190,7 +198,7 @@ contract WalletAccount is
     bytes32 userOpHash
   ) internal virtual override returns (uint256 validationData) {
     // second ownerがセットされていない場合は、通常のvalidate
-    if(secondOwner == address(0)) {
+    if (secondOwner == address(0)) {
       bytes32 hash = userOpHash.toEthSignedMessageHash();
       if (owner != hash.recover(userOp.signature)) return SIG_VALIDATION_FAILED;
       return 0;
@@ -208,50 +216,51 @@ contract WalletAccount is
     //   return SIG_VALIDATION_FAILED;
     return 0;
   }
+
   // 本当ならこのコントラクトに入れたくない、デプロイの時のガス代が高いから
   // だけどまぁ今回はこのまま
   // function extractECDSASignature(bytes memory _fullSignature) private pure returns (bytes memory signature1, bytes memory signature2) {
-      //   require(_fullSignature.length == 130, "Invalid length");
+  //   require(_fullSignature.length == 130, "Invalid length");
 
-      //   signature1 = new bytes(65);
-      //   signature2 = new bytes(65);
+  //   signature1 = new bytes(65);
+  //   signature2 = new bytes(65);
 
-      //   // Copying the first signature. Note, that we need an offset of 0x20 
-      //   // since it is where the length of the `_fullSignature` is stored
-      //   assembly {
-      //       let r := mload(add(_fullSignature, 0x20))
-			// let s := mload(add(_fullSignature, 0x40))
-			// let v := and(mload(add(_fullSignature, 0x41)), 0xff)
+  //   // Copying the first signature. Note, that we need an offset of 0x20
+  //   // since it is where the length of the `_fullSignature` is stored
+  //   assembly {
+  //       let r := mload(add(_fullSignature, 0x20))
+  // let s := mload(add(_fullSignature, 0x40))
+  // let v := and(mload(add(_fullSignature, 0x41)), 0xff)
 
-      //       mstore(add(signature1, 0x20), r)
-      //       mstore(add(signature1, 0x40), s)
-      //       mstore8(add(signature1, 0x60), v)
-      //   }
+  //       mstore(add(signature1, 0x20), r)
+  //       mstore(add(signature1, 0x40), s)
+  //       mstore8(add(signature1, 0x60), v)
+  //   }
 
-      //   // Copying the second signature.
-      //   assembly {
-      //       let r := mload(add(_fullSignature, 0x61))
-      //       let s := mload(add(_fullSignature, 0x81))
-      //       let v := and(mload(add(_fullSignature, 0x82)), 0xff)
+  //   // Copying the second signature.
+  //   assembly {
+  //       let r := mload(add(_fullSignature, 0x61))
+  //       let s := mload(add(_fullSignature, 0x81))
+  //       let v := and(mload(add(_fullSignature, 0x82)), 0xff)
 
-      //       mstore(add(signature2, 0x20), r)
-      //       mstore(add(signature2, 0x40), s)
-      //       mstore8(add(signature2, 0x60), v)
-      //   }
-        //   require(_fullSignature.length == 264, "Invalid length");
+  //       mstore(add(signature2, 0x20), r)
+  //       mstore(add(signature2, 0x40), s)
+  //       mstore8(add(signature2, 0x60), v)
+  //   }
+  //   require(_fullSignature.length == 264, "Invalid length");
 
-        // signature1 = new bytes(132);
-        // signature2 = new bytes(132);
+  // signature1 = new bytes(132);
+  // signature2 = new bytes(132);
 
-        //   for (uint256 i = 0; i < 132; i++) {
-        //       signature1[i] = _fullSignature[i];
-        //   }
+  //   for (uint256 i = 0; i < 132; i++) {
+  //       signature1[i] = _fullSignature[i];
+  //   }
 
-        //   // Copying the second signature.
-        //   for (uint256 i = 0; i < 132; i++) {
-        //       signature2[i] = _fullSignature[i + 132];
-        //   }
-   // }
+  //   // Copying the second signature.
+  //   for (uint256 i = 0; i < 132; i++) {
+  //       signature2[i] = _fullSignature[i + 132];
+  //   }
+  // }
   // TODO: Social Recovery
   /*
   // Social Recovery用Lit Actionの署名元アドレス
