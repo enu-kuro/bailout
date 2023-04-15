@@ -1,3 +1,4 @@
+import { UserOperationStruct } from '@account-abstraction/contracts';
 import { defaultSnapOrigin } from '../config';
 import { GetSnapsResponse, Snap } from '../types';
 import {
@@ -6,6 +7,8 @@ import {
   getAAState as getAAStateSnap,
   set2Fa as set2FaSnap,
   setupSocialRecovery as setupSocialRecoverySnap,
+  createUnsignedUserOp as createUnsignedUserOpSnap,
+  transfer as transferSnap,
 } from '../snapMock/aaWallet';
 import { mintPKPWithCredential, mintPKPWithIpfsCid } from '../snapMock/lit';
 /**
@@ -125,18 +128,46 @@ export const create2FaWallet = async (credential: string) => {
   return pkpPublicKey;
 };
 
-export const setupSocialRecovery = async ({
+export const createUnsignedUserOp = async ({
   targetAddress,
-  ipfsCid,
+  sendValue,
 }: {
   targetAddress: string;
+  sendValue: number;
+}) => {
+  const { userOpHash, userOp } = await createUnsignedUserOpSnap({
+    targetAddress,
+    sendValue,
+  });
+  return { userOpHash, userOp };
+};
+
+export const transfer = async ({
+  userOp,
+  signature,
+}: {
+  userOp: UserOperationStruct;
+  signature: string;
+}) => {
+  const txHash = await transferSnap({
+    userOp,
+    signature,
+  });
+  return txHash;
+};
+
+export const setupSocialRecovery = async ({
+  socialRecoveryAddress,
+  ipfsCid,
+}: {
+  socialRecoveryAddress: string;
   ipfsCid: string;
 }) => {
   const { pkpPublicKey, pkpEthAddress } = await mintPKPWithIpfsCid({ ipfsCid });
   const txHash = '';
   return { pkpPublicKey, pkpEthAddress, txHash };
   // const txHash = setupSocialRecoverySnap({
-  //   targetAddress,
+  //   socialRecoveryAddress,
   //   proverAddress: pkpEthAddress,
   // });
   // return { pkpPublicKey, pkpEthAddress, txHash };

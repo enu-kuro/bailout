@@ -1,3 +1,5 @@
+import * as LitJsSdk from '@lit-protocol/lit-node-client';
+// const LitJsSdk = {} as any;
 export const set2FaPkpPublicKey = async (pkpPublicKey: string) => {
   localStorage.setItem('2faPkpPublicKey', pkpPublicKey);
 };
@@ -48,4 +50,90 @@ export const getPkpIpfsCid = () => {
   }
   // TODO: error
   return '';
+};
+
+export const getSocialRecoverySignature = async ({
+  pkpPublicKey,
+  ipfsId,
+}: {
+  pkpPublicKey: string;
+  ipfsId: string;
+}) => {
+  const litNodeClient = new LitJsSdk.LitNodeClient({
+    litNetwork: 'serrano',
+    debug: true,
+  });
+  console.log('litNodeClient', litNodeClient);
+
+  await litNodeClient.connect();
+
+  const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain: 'mumbai' });
+
+  const results = await litNodeClient.executeJs({
+    ipfsId,
+    authSig,
+    jsParams: {
+      publicKey: pkpPublicKey,
+      sigName: 'sig1',
+    },
+  });
+  console.log('results', results);
+  // const txParams = results.response as UnsignedTransaction;
+  return results.signatures.sig1.signature as string;
+};
+
+const litActionCodeForSign = `
+const go = async () => {
+  const fromAddress = ethers.utils.computeAddress(publicKey);
+  LitActions.setResponse({ response: JSON.stringify({fromAddress: fromAddress}) });
+  const sigShare = await LitActions.ethPersonalSignMessageEcdsa({ message, publicKey, sigName });
+  // const sigShare = await LitActions.signEcdsa({ toSign, publicKey, sigName });
+};
+
+go();
+`;
+
+export const signWithPkp = async ({
+  message,
+  pkpPublicKey,
+  accessToken,
+}: {
+  message: string;
+  pkpPublicKey: string;
+  accessToken: string;
+}) => {
+  console.log('signWithPkp');
+  console.log('pkpPublicKey', pkpPublicKey);
+  console.log('accessToken', accessToken);
+
+  const litNodeClient = new LitJsSdk.LitNodeClient({
+    litNetwork: 'serrano',
+    debug: true,
+  });
+
+  await litNodeClient.connect();
+
+  const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain: 'mumbai' });
+  // const authSig = await ethConnect.signAndSaveAuthMessage({
+  //   chainId: 80001,
+  // });
+  console.log('authSig', authSig);
+
+  const results = await litNodeClient.executeJs({
+    code: litActionCodeForSign,
+    authSig,
+    jsParams: {
+      publicKey: pkpPublicKey,
+      message,
+      sigName: 'sig1',
+    },
+    authMethods: [
+      {
+        accessToken,
+        authMethodType: 6,
+      },
+    ],
+  });
+
+  return results.signatures.sig1.signature as string;
 };

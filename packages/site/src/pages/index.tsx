@@ -20,6 +20,13 @@ import {
   setPkpIpfsCid,
   setSocialRecoveryPkpPublicKey,
   socialRecoveryLitAction,
+  getSocialRecoverySignature,
+  signWithPkp,
+  get2FaPkpPublicKey,
+  createUnsignedUserOp,
+  transfer,
+  getSocialRecoveryPkpPublicKey,
+  getPkpIpfsCid,
 } from '../utils';
 import {
   ConnectButton,
@@ -42,8 +49,9 @@ import {
 } from '../components/StyledComponents';
 import { useGoogleAuth } from '../hooks/useGoogleAuth';
 
-export const DEFAULT_LIT_ACTION = socialRecoveryLitAction;
-
+const DEFAULT_LIT_ACTION = socialRecoveryLitAction;
+const DEFAULT_LIT_ACTION_IPFS_CID =
+  'QmXqnNtfcQMfTAqk8bWyR4n1Rtkkbgwg7rTPZLTKUYpd85';
 const Index = () => {
   const [state, dispatch] = useContext(MetaMaskContext);
   const [aaAddress, setAaAddress] = useState('');
@@ -51,10 +59,10 @@ const Index = () => {
   const [aaSecondOwner, setAASecondOwner] = useState<string | null>();
   const [aaDeployed, setAADeployed] = useState<boolean>();
   const [targetAddress, setTargetAddress] = useState('');
-  const [sendValue, setSendValues] = useState(0.001);
+  const [sendValue, setSendValue] = useState(0.001);
   const [publicationId, setPublicationId] = useState('');
   const [guardingUserId, setGuardingUserId] = useState('');
-  const [ipfsCid, setIpfsCid] = useState('');
+  const [ipfsCid, setIpfsCid] = useState(DEFAULT_LIT_ACTION_IPFS_CID);
   const [socialRecoveryAddress, setSocialRecoveryAddress] = useState('');
   const [code, setCode] = useState(DEFAULT_LIT_ACTION);
 
@@ -140,11 +148,39 @@ const Index = () => {
 
   const handleTransferClick = async () => {
     console.log('handleTransferClick');
+    if (!googleCredential?.id_token) {
+      dispatch({
+        type: MetamaskActions.SetError,
+        payload: Error('Google credential is not available'),
+      });
+      return;
+    }
+
+    if (!ethers.utils.isAddress(targetAddress)) {
+      dispatch({
+        type: MetamaskActions.SetError,
+        payload: Error(`Address "${targetAddress}" is not valid`),
+      });
+    }
+    const { userOpHash, userOp } = await createUnsignedUserOp({
+      targetAddress,
+      sendValue,
+    });
+    console.log(userOpHash);
+
+    const pkpSignature = await signWithPkp({
+      message: userOpHash,
+      pkpPublicKey: get2FaPkpPublicKey(),
+      accessToken: googleCredential.id_token,
+    });
+
+    const txHash = await transfer({ userOp, signature: pkpSignature });
+    console.log('txHash', txHash);
   };
 
   const handleSetupSocialRecoveryClick = async () => {
     console.log('handleSetupSocialRecoveryClick');
-    if (ipfsCid === '' || targetAddress === '') {
+    if (ipfsCid === '' || socialRecoveryAddress === '') {
       dispatch({
         type: MetamaskActions.SetError,
         payload: Error('IPFS CID or targetAddress is not available'),
@@ -152,7 +188,7 @@ const Index = () => {
       return;
     }
     const { pkpPublicKey, pkpEthAddress, txHash } = await setupSocialRecovery({
-      targetAddress,
+      socialRecoveryAddress,
       ipfsCid,
     });
     console.log('txHash', txHash);
@@ -165,6 +201,23 @@ const Index = () => {
 
   const handleExecuteSocialRecoveryClick = async () => {
     console.log('handleExecuteSocialRecoveryClick');
+
+    const socialRecoveryPkpPublicKey = getSocialRecoveryPkpPublicKey();
+    const socialRecoveryIpfsCid = getPkpIpfsCid();
+    if (socialRecoveryIpfsCid === '' || socialRecoveryPkpPublicKey === '') {
+      dispatch({
+        type: MetamaskActions.SetError,
+        payload: Error(
+          'socialRecoveryIpfsCid or socialRecoveryPkpPublicKey  is not available',
+        ),
+      });
+      return;
+    }
+    const socialRecoverySignature = await getSocialRecoverySignature({
+      pkpPublicKey: socialRecoveryPkpPublicKey,
+      ipfsId: socialRecoveryIpfsCid,
+    });
+    console.log('socialRecoverySignature', socialRecoverySignature);
   };
   return (
     <Container>
@@ -289,17 +342,25 @@ const Index = () => {
                     onChange={(e) => setTargetAddress(e.target.value)}
                   />
                 </label>
-                <label>Value: {sendValue}</label>
+                <label>
+                  Value:
+                  <Input
+                    type="number"
+                    placeholder="target address"
+                    value={sendValue}
+                    onChange={(e) => setSendValue(Number(e.target.value))}
+                  />
+                </label>
                 <Button
                   onClick={handleTransferClick}
-                  disabled={!state.installedSnap}
+                  // disabled={!state.installedSnap}
                 >
                   Transfer
                 </Button>
               </>
             ),
           }}
-          disabled={!state.installedSnap}
+          // disabled={!state.installedSnap}
           fullWidth={
             state.isFlask &&
             Boolean(state.installedSnap) &&
@@ -373,14 +434,14 @@ const Index = () => {
                 </label>
                 <Button
                   onClick={handleSetupSocialRecoveryClick}
-                  disabled={!socialRecoveryAddress || !ipfsCid}
+                  // disabled={!socialRecoveryAddress || !ipfsCid}
                 >
                   Setup Social Recovery
                 </Button>
               </div>
             ),
           }}
-          disabled={!state.installedSnap}
+          // disabled={!state.installedSnap}
           fullWidth={true}
         />
         <Card
@@ -396,7 +457,7 @@ const Index = () => {
               </Button>
             ),
           }}
-          disabled={!state.installedSnap}
+          // disabled={!state.installedSnap}
         ></Card>
         <Notice>
           <p>

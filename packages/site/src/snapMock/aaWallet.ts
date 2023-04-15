@@ -1,6 +1,7 @@
 import { BaseProvider } from '@metamask/providers';
-import { BigNumber, Contract, ethers } from 'ethers';
+import { Contract, ethers } from 'ethers';
 import { HttpRpcClient, SimpleAccountAPI } from '@account-abstraction/sdk';
+import { UserOperationStruct } from '@account-abstraction/contracts';
 import config from '../../../../aaConfig.json';
 import WalletAccount from '../../../../contracts/WalletAccount.json';
 import { ChainId, changeNetwork } from '../utils';
@@ -131,6 +132,95 @@ export const set2Fa = async (address: string) => {
   const txHash = await accountAPI.getUserOpReceipt(uoHash);
   console.log(`Transaction hash: ${txHash}`);
 
+  return txHash;
+};
+
+export const createUnsignedUserOp = async ({
+  targetAddress,
+  sendValue = 0,
+  data = '0x',
+}: {
+  targetAddress: string;
+  sendValue?: number;
+  data?: string;
+}) => {
+  const value = ethers.utils.parseEther(sendValue.toString());
+  const provider = new ethers.providers.Web3Provider(
+    window.ethereum as BaseProvider,
+  );
+  await provider.send('eth_requestAccounts', []);
+  const signer = provider.getSigner();
+
+  const accountAPI = new SimpleAccountAPI({
+    provider,
+    entryPointAddress,
+    owner: signer,
+    factoryAddress,
+  });
+
+  // getGasFee() won't culculate enough gas fee for the first transaction.
+  const userOp = await accountAPI.createUnsignedUserOp({
+    target: targetAddress,
+    value,
+    data,
+    maxPriorityFeePerGas: 0x2540be400, // 15gwei
+    maxFeePerGas: 0x6fc23ac00, // 30gewi
+  });
+  // const userOp = await resolveObjectPromises(_userOp);
+  console.log('createUnsignedUserOp', userOp);
+
+  // for 2FA. signature field is longer, so gas fee is more.
+  // userOp.preVerificationGas *= 1.5;
+
+  const userOpHash = await accountAPI.getUserOpHash(userOp);
+
+  return { userOpHash, userOp };
+};
+
+export const transfer = async ({
+  userOp,
+  signature,
+}: {
+  userOp: UserOperationStruct;
+  signature: string;
+}) => {
+  console.log('transferFromAA');
+  const provider = new ethers.providers.JsonRpcProvider(config.rpcUrl);
+
+  const ethProvider = new ethers.providers.Web3Provider(
+    window.ethereum as unknown as BaseProvider,
+  );
+  await ethProvider.send('eth_requestAccounts', []);
+  const signer = ethProvider.getSigner();
+
+  const accountAPI = new SimpleAccountAPI({
+    provider,
+    entryPointAddress,
+    owner: signer,
+    factoryAddress,
+  });
+
+  console.log('userOp', JSON.stringify(userOp));
+  const signedUserOp = await accountAPI.signUserOp(userOp);
+
+  const client = new HttpRpcClient(
+    bundlerUrl,
+    entryPointAddress,
+    Number(ChainId.mumbai),
+  );
+
+  // TODO: 2FA(multisig)
+  const sig = await signedUserOp.signature;
+  console.log('signature', signature);
+  console.log('sig', sig);
+
+  console.log('signedUserOp', signedUserOp);
+  const uoHash = await client.sendUserOpToBundler(signedUserOp);
+  console.log(`UserOpHash: ${uoHash}`);
+
+  console.log('Waiting for transaction...');
+  const txHash = await accountAPI.getUserOpReceipt(uoHash);
+  console.log(`Transaction hash: ${txHash}`);
   return txHash;
 };
 
